@@ -1,0 +1,60 @@
+<project name="dps-pxpay" default="dist" basedir=".">
+
+	<!-- used directories -->
+	<property name="build.dir" value="tmp" />
+    <property name="dist.dir" value="dist" />
+
+
+	<!-- init -->
+	<target name="init" description="Initialize project.">
+		<tstamp />
+	</target>
+
+
+	<!-- clean -->
+	<target name="clean" description="Clean up created files.">
+		<delete dir="${build.dir}" />
+	</target>
+
+
+	<!-- ask for target browser if not set -->
+	<target name="ask-version" unless="version" description="Ask for version.">
+	  <input addproperty="version" message="Enter the version number " /> 
+	</target>
+
+
+	<!-- prepare build -->
+	<target name="prepare" depends="init,ask-version" description="Prepare files.">
+		<!-- create required directories -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+
+		<copy todir="${build.dir}">
+            <fileset dir="." includes="zen-cart/**, *.txt, *.sql" />
+		</copy>
+	</target>
+
+
+	<!-- patch all files in ${patch.dir} -->
+	<target name="patch" description="Ant property style substitutions.">
+		<echo message="Versioning ${patch.dir}/** ..." />
+		<!-- '$$': escape Ant property expansion, '\': escape regexp '$' handling, '\}' required for JDK regexp implementation -->
+		<replaceregexp match="\$$\{version\}" replace="${version}" flags="g"><fileset dir="${patch.dir}" /></replaceregexp>
+	</target>
+
+
+	<!-- patch distribution files -->
+	<target name="patch-dist" description="Patch distribution files.">
+		<antcall target="patch">
+			<param name="patch.dir" value="${build.dir}" />
+		</antcall>
+	</target>
+
+
+	<!-- build release zip -->
+	<target name="dist" depends="clean,prepare,patch-dist" description="Build release .zip file.">
+		<zip zipfile="${dist.dir}/dps-pxpay-${version}.zip" basedir="${build.dir}" />
+        <antcall target="clean" />
+	</target>
+
+</project>
