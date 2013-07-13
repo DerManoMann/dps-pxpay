@@ -22,7 +22,7 @@
  *
  */
 ?>
-<?php  
+<?php
 
 define('TABLE_DPS_PXPAY', DB_PREFIX . 'dps_pxpay');
 
@@ -79,7 +79,7 @@ class dps_pxpay {
         $this->_dpsInfo = 'True' == MODULE_PAYMENT_DPS_PXPAY_SHOW_LOGO;
     }
 
-    
+
     /**
      * Update the module status.
      *
@@ -91,7 +91,7 @@ class dps_pxpay {
 
         if ($this->enabled && ((int)MODULE_PAYMENT_DPS_PXPAY_ZONE > 0)) {
             $check_flag = false;
-            $sql = "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " 
+            $sql = "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . "
                     where geo_zone_id = '" . MODULE_PAYMENT_DPS_PXPAY_ZONE . "'
                       and zone_country_id = :countryId
                     order by zone_id";
@@ -135,11 +135,11 @@ class dps_pxpay {
      * @return array Form fields to be displayed durin checkout.
      */
     function selection() {
-        $selection = array('id' => $this->code, 'module' => $this->title);	
+        $selection = array('id' => $this->code, 'module' => $this->title);
         if ($this->_dpsInfo) {
             $selection['fields'] = array(
                    array('title' => MODULE_PAYMENT_DPS_PXPAY_LOGO,
-                         'field' => MODULE_PAYMENT_DPS_PXPAY_LOGO_TEXT),                                                 
+                         'field' => MODULE_PAYMENT_DPS_PXPAY_LOGO_TEXT),
             );
         }
         return $selection;
@@ -387,13 +387,13 @@ class dps_pxpay {
     function _emailNotify($subject, $text) {
         if (zen_validate_email(MODULE_PAYMENT_DPS_PXPAY_EMAIL)) {
             zen_mail('', MODULE_PAYMENT_DPS_PXPAY_EMAIL, $subject, $text, STORE_OWNER, STORE_OWNER_EMAIL_ADDRESS);
-        }        
+        }
     }
 
 
     /**
      * Create new database tracking entry.
-     * 
+     *
      * @param string txnId The transaction id.
      * @param string merchantRef Merchant reference.
      */
@@ -412,14 +412,14 @@ class dps_pxpay {
 
     /**
      * Find database tracking entry.
-     * 
+     *
      * @param string txnId The transaction id.
      * @return array Array of tracking values or <code>null</code>.
      */
     function _findTrackingEntry($txnId) {
     global $db;
 
-        $sql = "select * from " . TABLE_DPS_PXPAY . " 
+        $sql = "select * from " . TABLE_DPS_PXPAY . "
                 where txn_id = :txnId";
         $sql = $db->bindVars($sql, ':txnId', $txnId, 'string');
 
@@ -434,7 +434,7 @@ class dps_pxpay {
 
     /**
      * Update database tracking entry.
-     * 
+     *
      * @param string txnId The transaction id.
      * @param int orderId The order id.
      * @param string success The payment success flag (1 = approved)
@@ -557,7 +557,7 @@ class dps_pxpay {
     function keys() {
     global $db;
 
-        $results = $db->Execute("select configuration_key from " . TABLE_CONFIGURATION . " 
+        $results = $db->Execute("select configuration_key from " . TABLE_CONFIGURATION . "
                                  where configuration_key like 'MODULE_PAYMENT_DPS_PXPAY_%' " . "
                                  order by sort_order");
         $keys = array();
@@ -568,7 +568,7 @@ class dps_pxpay {
 
         return $keys;
     }
-    
+
 
 
     /**
@@ -584,7 +584,9 @@ class dps_pxpay {
         curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
-        curl_setopt($curl, CURLOPT_POSTFIELDSIZE, 0);
+        if (defined('CURLOPT_POSTFIELDSIZE')) {
+            curl_setopt($curl, CURLOPT_POSTFIELDSIZE, 0);
+        }
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
@@ -611,7 +613,7 @@ class dps_pxpay {
         if (is_array($element)) {
             $xml = '';
             foreach ($element as $elem => $value) {
-               $xml .= $this->_valueXml($elem, $value); 
+               $xml .= $this->_valueXml($elem, $value);
             }
             return $xml;
         }
@@ -645,5 +647,5 @@ class dps_pxpay {
     }
 
 }
-  
+
 ?>
