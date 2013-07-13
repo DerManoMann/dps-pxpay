@@ -1,6 +1,6 @@
-DPS PxPay PAYMENT MODULE FOR zen-cart 1.3.x
-===========================================
-Copyright (c) 2007 mixedmatter Ltd
+DPS PxPay PAYMENT MODULE FOR zen-cart 1.3.x, 1.5.x
+==================================================
+Copyright (c) 2007-2013 mixedmatter Ltd
 
 This DPS PxPay payment module is released under the terms of the General Public
 License. Please see the license.txt file for more details.
@@ -10,7 +10,7 @@ License. Please see the license.txt file for more details.
 ===========
 This is a zen-cart 1.3.x payment module to use with the DPS PxPay payment
 solution.
-See: http://www.dps.co.nz/technical_resources/ecommerce_hosted/pxpay.html
+See: http://www.paymentexpress.com/technical_resources/ecommerce_hosted/pxpay.html
 for more details.
 
 
@@ -67,7 +67,7 @@ This allows you to choose the transaction method. You can choose between:
   The payment is authorized only. No funds are transferred at checkout time.
   The merchant is required to complete the transaction within 7 days.
 
-Please see http://www.dps.co.nz/technical_resources/ecommerce_hosted/pxpay.html#txntype
+Please see http://www.paymentexpress.com/technical_resources/ecommerce_hosted/pxpay.html#txntype
 for more details.
 
 4.2.5 Email Logging 

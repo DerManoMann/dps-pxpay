@@ -23,11 +23,11 @@
  * $Id: dps_pxpay.php,v 1.2 2007/08/09 09:18:33 radebatz Exp $
  */
 ?>
-<?php  
+<?php
 
     // admin
     define('MODULE_PAYMENT_DPS_PXPAY_TEXT_TITLE', 'DPS PxPay Credit Card');
-    define('MODULE_PAYMENT_DPS_PXPAY_TEXT_DESCRIPTION', 'DPS PxPay Method for Credit Card Processing - mixedmatter Ltd. ver. 1.0.1');
+    define('MODULE_PAYMENT_DPS_PXPAY_TEXT_DESCRIPTION', 'DPS PxPay Method for Credit Card Processing - mixedmatter Ltd. ver. ${version}');
 
     // error messages
     define('MODULE_PAYMENT_DPS_PXPAY_TEXT_NOT_AVAILABLE', 'The selected payment type is currently not available.');

@@ -2,7 +2,7 @@
 
 	<!-- used directories -->
 	<property name="build.dir" value="tmp" />
-    <property name="dist.dir" value="dist" />
+  <property name="dist.dir" value="dist" />
 
 
 	<!-- init -->
@@ -54,7 +54,7 @@
 	<!-- build release zip -->
 	<target name="dist" depends="clean,prepare,patch-dist" description="Build release .zip file.">
 		<zip zipfile="${dist.dir}/dps-pxpay-${version}.zip" basedir="${build.dir}" />
-        <antcall target="clean" />
+    <antcall target="clean" />
 	</target>
 
 </project>
