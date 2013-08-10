@@ -32,6 +32,10 @@ zen-cart admin (Tools -> Install SQL Patches)
 column 'last_page_url' in the zen-cart table 'whos_online' needs to be extended
 from 255 to at least 2048.
 
+3.4 If using PHP with the suhosin extension it is required to have the setting 
+'suhosin.get.max_value_length' set to also at least 2048 in order to allow PHP
+to process long redirect urls.
+
 
 4. Setup and Configuration
 ==========================
