@@ -9,17 +9,16 @@ CREATE TABLE dps_pxpay (
   txn_id varchar(16) NOT NULL,
   txn_type varchar(16) NOT NULL,
   merchant_ref varchar(64) NOT NULL default '',
-  order_id int(11) NOT NULL default '0',
+  order_id int(11) NOT NULL default 0,
 
-  success tinyint(1) NOT NULL default '0',
+  success tinyint(1) NOT NULL default 0,
   response_text varchar(32) NOT NULL default '',
   auth_code varchar(22) NOT NULL default '',
   txn_ref varchar(16) NOT NULL default '',
 
   PRIMARY KEY (dps_pxpay_id),
-  KEY idx_dpx_pxpay_txn_id (txn_id),
-  FOREIGN KEY (order_id) REFERENCES orders (orders_id) ON DELETE CASCADE
-) TYPE=MyISAM;
+  KEY idx_dpx_pxpay_txn_id (txn_id)
+);
 
 
 #################################################
@@ -27,4 +26,4 @@ CREATE TABLE dps_pxpay (
 # extend to fit in long DPS redirect URLs
 #
 #################################################
-ALTER TABLE whos_online MODIFY   last_page_url varchar(2048) NOT NULL default '';
+ALTER TABLE whos_online MODIFY last_page_url varchar(2048) NOT NULL default '';
