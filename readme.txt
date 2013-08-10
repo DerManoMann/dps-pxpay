@@ -1,6 +1,8 @@
-DPS PxPay PAYMENT MODULE FOR zen-cart 1.3.x, 1.5.x
+DPS PxPay payment module v${version} for zen-cart
 ==================================================
 Copyright (c) 2007-2013 mixedmatter Ltd
+
+https://github.com/DerManoMann/dps-pxpay
 
 This DPS PxPay payment module is released under the terms of the General Public
 License. Please see the license.txt file for more details.
@@ -8,7 +10,7 @@ License. Please see the license.txt file for more details.
 
 1. Overview
 ===========
-This is a zen-cart 1.3.x payment module to use with the DPS PxPay payment
+This is a zen-cart 1.3.x/1.5.x payment module to use with the DPS PxPay payment
 solution.
 See: http://www.paymentexpress.com/technical_resources/ecommerce_hosted/pxpay.html
 for more details.
