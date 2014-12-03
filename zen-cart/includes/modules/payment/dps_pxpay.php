@@ -500,7 +500,12 @@ class dps_pxpay {
                                          where configuration_key = 'MODULE_PAYMENT_DPS_PXPAY_STATUS'");
             $this->_check = $check_query->RecordCount();
         }
-
+        if (IS_ADMIN_FLAG) {
+        $new_version_details = plugin_version_check_for_updates(658, '1.4');
+        if ($new_version_details !== FALSE) {
+          $this->title .= '<span class="alert">' . ' - NOTE: A NEW VERSION OF THIS PLUGIN IS AVAILABLE. <a href="' . $new_version_details['link'] . '" target="_blank">[Details]</a>' . '</span>';
+        }
+        }
         return $this->_check;
     }
 
@@ -628,4 +633,20 @@ class dps_pxpay {
 
 }
 
-?>
+  /**
+   * this is ONLY here to offer compatibility with ZC versions prior to v1.5.2
+   */
+if (!function_exists('plugin_version_check_for_updates')) {
+  function plugin_version_check_for_updates($fileid = 0, $version_string_to_check = '') {
+    if ($fileid == 0) return FALSE;
+    $new_version_available = FALSE;
+    $lookup_index = 0;
+    $url = 'http://www.zen-cart.com/downloads.php?do=versioncheck' . '&id='.(int)$fileid;
+    $data = json_decode(file_get_contents($url), true);
+    // compare versions
+    if (strcmp($data[$lookup_index]['latest_plugin_version'], $version_string_to_check) > 0) $new_version_available = TRUE;
+    // check whether present ZC version is compatible with the latest available plugin version
+    if (!in_array('v'. PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR, $data[$lookup_index]['zcversions'])) $new_version_available = FALSE;
+    return ($new_version_available) ? $data[$lookup_index] : FALSE;
+  }
+}
