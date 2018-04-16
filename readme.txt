@@ -1,3 +1,8 @@
+===================================================
+ + THIS REPOSITORY IS NO LONGER MAINTAINED        =
+===================================================
+
+
 DPS PxPay PAYMENT MODULE FOR zen-cart 1.3.x, 1.5.x
 ==================================================
 Copyright (c) 2007-2013 mixedmatter Ltd
