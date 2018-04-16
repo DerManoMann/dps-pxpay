@@ -1,4 +1,5 @@
 <?php
+
 /*
  * DPS PxPay payment module for zen-cart.
  * Copyright (c) 2006 mixedmatter Ltd
@@ -26,7 +27,6 @@
 
 define('TABLE_DPS_PXPAY', DB_PREFIX . 'dps_pxpay');
 
-
 /**
  * DPS PxPay payment module.
  *
@@ -38,8 +38,8 @@ define('TABLE_DPS_PXPAY', DB_PREFIX . 'dps_pxpay');
  * @version $Id: dps_pxpay.php,v 1.6 2007/08/09 09:18:33 radebatz Exp $
  */
 class dps_pxpay {
-    var $code, $title, $description, $enabled;
 
+    var $code, $title, $description, $enabled;
     // the DPS PxPay URL
     var $_dpsPxpayUrl;
     // the URL for DPS to redirect (also used for fail proof result notification)
@@ -49,12 +49,11 @@ class dps_pxpay {
     var $_trace;
     var $_dpsInfo;
 
-
     /**
      * Default c'tor.
      */
     function dps_pxpay() {
-    global $order;
+        global $order;
 
         $this->code = 'dps_pxpay';
         $this->title = MODULE_PAYMENT_DPS_PXPAY_TEXT_TITLE;
@@ -62,11 +61,12 @@ class dps_pxpay {
         $this->enabled = ((MODULE_PAYMENT_DPS_PXPAY_STATUS == 'True') ? true : false);
         $this->sort_order = MODULE_PAYMENT_DPS_PXPAY_SORT_ORDER;
 
-        if ((int)MODULE_PAYMENT_DPS_PXPAY_ORDER_STATUS_ID > 0) {
+        if ((int) MODULE_PAYMENT_DPS_PXPAY_ORDER_STATUS_ID > 0) {
             $this->order_status = MODULE_PAYMENT_DPS_PXPAY_ORDER_STATUS_ID;
         }
 
-        if (is_object($order)) $this->update_status();
+        if (is_object($order))
+            $this->update_status();
 
         $this->_dpsPxpayUrl = 'https://sec.paymentexpress.com/pxpay/pxaccess.aspx';
         // support for fail proof result notification
@@ -79,7 +79,6 @@ class dps_pxpay {
         $this->_dpsInfo = 'True' == MODULE_PAYMENT_DPS_PXPAY_SHOW_LOGO;
     }
 
-
     /**
      * Update the module status.
      *
@@ -87,9 +86,9 @@ class dps_pxpay {
      * module and order to synchronise.
      */
     function update_status() {
-    global $order, $db;
+        global $order, $db;
 
-        if ($this->enabled && ((int)MODULE_PAYMENT_DPS_PXPAY_ZONE > 0)) {
+        if ($this->enabled && ((int) MODULE_PAYMENT_DPS_PXPAY_ZONE > 0)) {
             $check_flag = false;
             $sql = "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . "
                     where geo_zone_id = '" . MODULE_PAYMENT_DPS_PXPAY_ZONE . "'
@@ -115,7 +114,6 @@ class dps_pxpay {
         }
     }
 
-
     /**
      * JavaScript form validation.
      *
@@ -124,7 +122,6 @@ class dps_pxpay {
     function javascript_validation() {
         return '';
     }
-
 
     /**
      * Generate form fields for this module.
@@ -138,13 +135,12 @@ class dps_pxpay {
         $selection = array('id' => $this->code, 'module' => $this->title);
         if ($this->_dpsInfo) {
             $selection['fields'] = array(
-                   array('title' => MODULE_PAYMENT_DPS_PXPAY_LOGO,
-                         'field' => MODULE_PAYMENT_DPS_PXPAY_LOGO_TEXT),
+                array('title' => MODULE_PAYMENT_DPS_PXPAY_LOGO,
+                    'field' => MODULE_PAYMENT_DPS_PXPAY_LOGO_TEXT),
             );
         }
         return $selection;
     }
-
 
     /**
      * Called before the confirmation page is displayed.
@@ -161,8 +157,8 @@ class dps_pxpay {
      *
      */
     function pre_confirmation_check() {
+        
     }
-
 
     /**
      * Called during display of the order confirmation page.
@@ -175,7 +171,6 @@ class dps_pxpay {
         return $confirmation;
     }
 
-
     /**
      * The return value of this method is inserted into the confirmation page form.
      *
@@ -186,7 +181,6 @@ class dps_pxpay {
     function process_button() {
         return '';
     }
-
 
     /**
      * Called before the checkout is actually performed.
@@ -204,7 +198,6 @@ class dps_pxpay {
             $this->_processPxPay();
         }
     }
-
 
     /**
      * Simple log method.
@@ -224,13 +217,13 @@ class dps_pxpay {
      * If successful, this will redirect to the DPS PxPay payments page.
      */
     function _processPxPay() {
-    global $order, $messageStack;
+        global $order, $messageStack;
 
         // customerId
         $customerId = $_SESSION['customer_id'];
 
         // merchant reference
-        $merchantRef = $customerId."-".date("YmdHis");
+        $merchantRef = $customerId . "-" . date("YmdHis");
         // unique id
         $txnId = uniqid(rand(0, 999), false);
 
@@ -238,7 +231,7 @@ class dps_pxpay {
 
         // custom data
         $customer = $order->customer;
-        $txnData1 = '' == $customer['company'] ? ($customer['firstname'].' '.$customer['lastname']) : $customer['company'];
+        $txnData1 = '' == $customer['company'] ? ($customer['firstname'] . ' ' . $customer['lastname']) : $customer['company'];
         $txnData2 = $customer['telephone'];
         $txnData3 = '';
 
@@ -258,13 +251,13 @@ class dps_pxpay {
         ));
         $generateRequest = $this->_valueXml('GenerateRequest', $generateRequest);
 
-        $this->log("generateRequest:\n".str_replace(MODULE_PAYMENT_DPS_PXPAY_USERID, 'userid', str_replace(MODULE_PAYMENT_DPS_PXPAY_KEY, 'key', $generateRequest)));
+        $this->log("generateRequest:\n" . str_replace(MODULE_PAYMENT_DPS_PXPAY_USERID, 'userid', str_replace(MODULE_PAYMENT_DPS_PXPAY_KEY, 'key', $generateRequest)));
         $curl = $this->_initCURL($generateRequest);
         $success = false;
 
         if ($response = curl_exec($curl)) {
             curl_close($curl);
-            $this->log("response:\n".$response);
+            $this->log("response:\n" . $response);
             $valid = $this->_xmlAttribute($response, 'valid');
             if (1 == $valid) {
                 // redirect to DPS PxPay payments form
@@ -278,19 +271,18 @@ class dps_pxpay {
             }
         } else {
             // calling DPS failed
-            $this->log("response:\n".curl_error());
+            $this->log("response:\n" . curl_error());
             $this->_emailNotify(MODULE_PAYMENT_DPS_PXPAY_TEXT_CANT_CONNECT, $generateRequest);
             $messageStack->add_session('checkout_payment', MODULE_PAYMENT_DPS_PXPAY_TEXT_NOT_AVAILABLE, 'error');
             zen_redirect(zen_href_link(FILENAME_CHECKOUT_PAYMENT, '', 'SSL', true, false));
         }
     }
 
-
     /**
      * Process the DPS response that is included in the DPS redirect back to zen-cart.
      */
     function _processPxPayResponse() {
-    global $order, $messageStack;
+        global $order, $messageStack;
 
         $processResponse = $this->_valueXml(array(
             'PxPayUserId' => MODULE_PAYMENT_DPS_PXPAY_USERID,
@@ -299,12 +291,12 @@ class dps_pxpay {
         ));
         $processResponse = $this->_valueXml('ProcessResponse', $processResponse);
 
-        $this->log("processResponse:\n".$processResponse);
+        $this->log("processResponse:\n" . $processResponse);
         $curl = $this->_initCURL($processResponse);
         $success = false;
         if ($response = curl_exec($curl)) {
             curl_close($curl);
-            $this->log("response:\n".$response);
+            $this->log("response:\n" . $response);
             $valid = $this->_xmlAttribute($response, 'valid');
             $success = $this->_xmlElement($response, 'Success');
             $txnId = $this->_xmlElement($response, 'TxnId');
@@ -332,7 +324,7 @@ class dps_pxpay {
             $this->_txnId = $txnId;
         } else {
             // calling DPS failed
-            $this->log("response:\n".curl_error());
+            $this->log("response:\n" . curl_error());
             $this->_emailNotify(MODULE_PAYMENT_DPS_PXPAY_TEXT_CANT_CONNECT, $processResponse);
             $messageStack->add_session('checkout_payment', MODULE_PAYMENT_DPS_PXPAY_TEXT_NOT_AVAILABLE, 'error');
             zen_redirect(zen_href_link(FILENAME_CHECKOUT_PAYMENT, '', 'SSL', true, false));
@@ -350,12 +342,11 @@ class dps_pxpay {
         $order->info['cc_owner'] = $this->_xmlElement($response, 'CardHolderName');
     }
 
-
     /**
      * Validate order.
      */
     function _validatePayment() {
-    global $messageStack;
+        global $messageStack;
 
         // this is also needed later to update the orderId
         $this->_txnId = $_GET['txnId'];
@@ -369,7 +360,6 @@ class dps_pxpay {
         // payment ok
     }
 
-
     /**
      * Get the current txnId.
      *
@@ -378,7 +368,6 @@ class dps_pxpay {
     function getTxnId() {
         return $this->_txnId;
     }
-
 
     /**
      * If configured, create email notification.
@@ -390,7 +379,6 @@ class dps_pxpay {
         }
     }
 
-
     /**
      * Create new database tracking entry.
      *
@@ -398,7 +386,7 @@ class dps_pxpay {
      * @param string merchantRef Merchant reference.
      */
     function _createTrackingEntry($txnId, $merchantRef) {
-    global $db;
+        global $db;
 
         $sql = "insert into " . TABLE_DPS_PXPAY . " (txn_id, txn_type, merchant_ref)
                 values (:txnId, :txnType, :merchantRef)";
@@ -409,7 +397,6 @@ class dps_pxpay {
         $results = $db->Execute($sql);
     }
 
-
     /**
      * Find database tracking entry.
      *
@@ -417,7 +404,7 @@ class dps_pxpay {
      * @return array Array of tracking values or <code>null</code>.
      */
     function _findTrackingEntry($txnId) {
-    global $db;
+        global $db;
 
         $sql = "select * from " . TABLE_DPS_PXPAY . "
                 where txn_id = :txnId";
@@ -431,7 +418,6 @@ class dps_pxpay {
         return null;
     }
 
-
     /**
      * Update database tracking entry.
      *
@@ -442,30 +428,39 @@ class dps_pxpay {
      * @param string authCode The returned auth code.
      * @param string txnRef The DPS transaction reference.
      */
-    function _updateTrackingEntry($txnId, $orderId=null, $success=null, $responseText=null, $authCode=null, $txnRef=null) {
-    global $db;
+    function _updateTrackingEntry($txnId, $orderId = null, $success = null, $responseText = null, $authCode = null, $txnRef = null) {
+        global $db;
 
         $where = "txn_id = :txnId";
         $where = $db->bindVars($where, ':txnId', $txnId, 'string');
         $data = array();
-        if (null !== $orderId) { $data['order_id'] = $orderId; }
-        if (null !== $success) { $data['success'] = $success; }
-        if (null !== $responseText) { $data['response_text'] = $responseText; }
-        if (null !== $authCode) { $data['auth_code'] = $authCode; }
-        if (null !== $txnRef) { $data['txn_ref'] = $txnRef; }
+        if (null !== $orderId) {
+            $data['order_id'] = $orderId;
+        }
+        if (null !== $success) {
+            $data['success'] = $success;
+        }
+        if (null !== $responseText) {
+            $data['response_text'] = $responseText;
+        }
+        if (null !== $authCode) {
+            $data['auth_code'] = $authCode;
+        }
+        if (null !== $txnRef) {
+            $data['txn_ref'] = $txnRef;
+        }
         if (0 < count($data)) {
             zen_db_perform(TABLE_DPS_PXPAY, $data, 'update', $where);
         }
     }
-
 
     /**
      * Called after the all checkout processing is complete, but before the
      * redirect to the confirmation page.
      */
     function after_process() {
+        
     }
-
 
     /**
      * Called after the order is created.
@@ -477,7 +472,6 @@ class dps_pxpay {
             $this->_updateTrackingEntry($this->_txnId, $orderId);
         }
     }
-
 
     /**
      * Access method for errors in this module.
@@ -491,7 +485,6 @@ class dps_pxpay {
         return array();
     }
 
-
     /**
      * Check if this module is enabled or not.
      *
@@ -500,17 +493,21 @@ class dps_pxpay {
      * @return bool <code>true</code> if this module is enabled, <code>false</code> if not.
      */
     function check() {
-    global $db;
+        global $db;
 
         if (!isset($this->_check)) {
             $check_query = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . "
                                          where configuration_key = 'MODULE_PAYMENT_DPS_PXPAY_STATUS'");
             $this->_check = $check_query->RecordCount();
         }
-
+        if (IS_ADMIN_FLAG) {
+        $new_version_details = plugin_version_check_for_updates(658, '1.4');
+        if ($new_version_details !== FALSE) {
+          $this->title .= '<span class="alert">' . ' - NOTE: A NEW VERSION OF THIS PLUGIN IS AVAILABLE. <a href="' . $new_version_details['link'] . '" target="_blank">[Details]</a>' . '</span>';
+        }
+        }
         return $this->_check;
     }
-
 
     /**
      * Install this module.
@@ -520,7 +517,7 @@ class dps_pxpay {
      * Typically inserts this modules configuration settings into the database.
      */
     function install() {
-    global $db;
+        global $db;
 
         $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Enable DPS PxPay Module', 'MODULE_PAYMENT_DPS_PXPAY_STATUS', 'True', 'Do you want to accept DPS PxPay payments?', '6', '0', 'zen_cfg_select_option(array(\'True\', \'False\'), ', now())");
         $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Enable tracing', 'MODULE_PAYMENT_DPS_PXPAY_TRACE', 'False', 'Do you want to trace all DPS communication in the webserver logfile??', '6', '5', 'zen_cfg_select_option(array(\'True\', \'False\'), ', now())");
@@ -534,18 +531,16 @@ class dps_pxpay {
         $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, use_function, date_added) values ('Order Status', 'MODULE_PAYMENT_DPS_PXPAY_ORDER_STATUS_ID', '0', 'Set the status of orders made with this payment module to this value.', '6', '40', 'zen_cfg_pull_down_order_statuses(', 'zen_get_order_status_name', now())");
     }
 
-
     /**
      * Remove this module and all associated configuration values/files etc.
      *
      * Admin function.
      */
     function remove() {
-    global $db;
+        global $db;
 
         $db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key in ('" . implode("', '", $this->keys()) . "')");
     }
-
 
     /**
      * Returns the configuration keys used by this module.
@@ -555,7 +550,7 @@ class dps_pxpay {
      * @return array List of configuration keys used by this module.
      */
     function keys() {
-    global $db;
+        global $db;
 
         $results = $db->Execute("select configuration_key from " . TABLE_CONFIGURATION . "
                                  where configuration_key like 'MODULE_PAYMENT_DPS_PXPAY_%' " . "
@@ -569,8 +564,6 @@ class dps_pxpay {
         return $keys;
     }
 
-
-
     /**
      * Set up CURL.
      *
@@ -582,25 +575,19 @@ class dps_pxpay {
 
         curl_setopt($curl, CURLOPT_URL, $this->_dpsPxpayUrl);
         curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
-        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
         if (defined('CURLOPT_POSTFIELDSIZE')) {
             curl_setopt($curl, CURLOPT_POSTFIELDSIZE, 0);
         }
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($curl, CURLOPT_HEADER, 0);
- //       curl_setopt($curl, CURLOPT_SSLVERSION, 3);
-
-        if (strtoupper(substr(@php_uname('s'), 0, 3)) === 'WIN') {
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        }
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         return $curl;
     }
-
 
     /**
      * Create XML value element.
@@ -609,17 +596,16 @@ class dps_pxpay {
      * @param string value The value.
      * @return string The formatted XML.
      */
-    function _valueXml($element, $value=null) {
+    function _valueXml($element, $value = null) {
         if (is_array($element)) {
             $xml = '';
             foreach ($element as $elem => $value) {
-               $xml .= $this->_valueXml($elem, $value);
+                $xml .= $this->_valueXml($elem, $value);
             }
             return $xml;
         }
-        return "<".$element.">".$value."</".$element.">".$this->_nl;
+        return "<" . $element . ">" . $value . "</" . $element . ">" . $this->_nl;
     }
-
 
     /**
      * Find element value in XML fragment.
@@ -629,10 +615,9 @@ class dps_pxpay {
      * @return string The element value or <code>null</code>.
      */
     function _xmlElement($xml, $name) {
-        $value = preg_replace('/.*<'.$name.'[^>]*>(.*)<\/'.$name.'>.*/', '\1', $xml);
+        $value = preg_replace('/.*<' . $name . '[^>]*>(.*)<\/' . $name . '>.*/', '\1', $xml);
         return $value;
     }
-
 
     /**
      * Find attribute value in XML fragment.
@@ -642,10 +627,26 @@ class dps_pxpay {
      * @return string The attribute value or <code>null</code>.
      */
     function _xmlAttribute($xml, $name) {
-        $value = preg_replace('/<.*'.$name.'="([^"]*)".*>/', '\1', $xml);
+        $value = preg_replace('/<.*' . $name . '="([^"]*)".*>/', '\1', $xml);
         return $value != $xml ? $value : null;
     }
 
 }
 
-?>
+  /**
+   * this is ONLY here to offer compatibility with ZC versions prior to v1.5.2
+   */
+if (!function_exists('plugin_version_check_for_updates')) {
+  function plugin_version_check_for_updates($fileid = 0, $version_string_to_check = '') {
+    if ($fileid == 0) return FALSE;
+    $new_version_available = FALSE;
+    $lookup_index = 0;
+    $url = 'http://www.zen-cart.com/downloads.php?do=versioncheck' . '&id='.(int)$fileid;
+    $data = json_decode(file_get_contents($url), true);
+    // compare versions
+    if (strcmp($data[$lookup_index]['latest_plugin_version'], $version_string_to_check) > 0) $new_version_available = TRUE;
+    // check whether present ZC version is compatible with the latest available plugin version
+    if (!in_array('v'. PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR, $data[$lookup_index]['zcversions'])) $new_version_available = FALSE;
+    return ($new_version_available) ? $data[$lookup_index] : FALSE;
+  }
+}
